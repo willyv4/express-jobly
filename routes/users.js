@@ -26,7 +26,7 @@ const router = express.Router();
  * Authorization required: login
  **/
 
-router.post("/", ensureLoggedIn, async function (req, res, next) {
+router.post("/", ensureAdmin, async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, userNewSchema);
     if (!validator.valid) {
@@ -49,7 +49,7 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
  * Authorization required: login
  **/
 
-router.get("/", ensureLoggedIn, ensureAdmin, async function (req, res, next) {
+router.get("/", ensureAdmin, async function (req, res, next) {
   try {
     const users = await User.findAll();
     return res.json({ users });
@@ -67,8 +67,7 @@ router.get("/", ensureLoggedIn, ensureAdmin, async function (req, res, next) {
 
 router.get(
   "/:username",
-  ensureLoggedIn,
-  ensureAdmin,
+  ensureLoggedIn || ensureAdmin,
   async function (req, res, next) {
     try {
       const user = await User.get(req.params.username);
@@ -91,8 +90,7 @@ router.get(
 
 router.patch(
   "/:username",
-  ensureLoggedIn,
-  ensureAdmin,
+  ensureLoggedIn || ensureAdmin,
   async function (req, res, next) {
     try {
       const validator = jsonschema.validate(req.body, userUpdateSchema);
@@ -116,8 +114,7 @@ router.patch(
 
 router.delete(
   "/:username",
-  ensureLoggedIn,
-  ensureAdmin,
+  ensureLoggedIn || ensureAdmin,
   async function (req, res, next) {
     try {
       await User.remove(req.params.username);
