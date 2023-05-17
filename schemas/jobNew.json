@@ -1,0 +1,53 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "http://example.com/example.json",
+    "type": "object",
+    "default": {},
+    "title": "Root Schema",
+    "required": [
+        "title",
+        "salary",
+        "equity",
+        "companyHandle"
+    ],
+    "properties": {
+        "title": {
+            "type": "string",
+            "default": "",
+            "title": "The title Schema",
+            "examples": [
+                "pro cuddler"
+            ]
+        },
+        "salary": {
+            "type": "integer",
+            "default": 0,
+            "title": "The salary Schema",
+            "examples": [
+                90000
+            ]
+        },
+        "equity": {
+            "type": "string",
+            "default": "0",
+            "title": "The equity Schema",
+            "examples": [
+                "1.0"
+            ]
+        },
+        "companyHandle": {
+            "type": "string",
+            "default": "",
+            "title": "The company_handle Schema",
+            "examples": [
+                "hall-mills2.0"
+            ]
+        }
+    },
+    "examples": [{
+        "title": "pro cuddler",
+        "salary": 90000,
+        "equity": 1.0,
+        "companyHandle": "hall-mills2.0"
+    }]
+}
