@@ -75,7 +75,8 @@ describe("findAll", function () {
 
 describe("get", function () {
   test("works", async function () {
-    let job = await Jobs.get("c1");
+    let jobs = await Jobs.get("c1");
+    let job = jobs[0];
     expect(job).toEqual({
       title: "job1",
       salary: 10000,

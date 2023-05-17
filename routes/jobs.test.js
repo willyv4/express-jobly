@@ -166,12 +166,14 @@ describe("GET /jobs/:companyHandle", function () {
   test("works for anon", async function () {
     const resp = await request(app).get(`/jobs/c1`);
     expect(resp.body).toEqual({
-      jobs: {
-        title: "job1",
-        salary: 100001,
-        equity: "0",
-        companyHandle: "c1",
-      },
+      jobs: [
+        {
+          title: "job1",
+          salary: 100001,
+          equity: "0",
+          companyHandle: "c1",
+        },
+      ],
     });
   });
 

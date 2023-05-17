@@ -214,8 +214,7 @@ describe("update", function () {
 describe("remove", function () {
   test("works", async function () {
     await User.remove("u1");
-    const res = await db.query(
-        "SELECT * FROM users WHERE username='u1'");
+    const res = await db.query("SELECT * FROM users WHERE username='u1'");
     expect(res.rows.length).toEqual(0);
   });
 
@@ -226,5 +225,25 @@ describe("remove", function () {
     } catch (err) {
       expect(err instanceof NotFoundError).toBeTruthy();
     }
+  });
+});
+
+describe("applyToJob", function () {
+  let job;
+
+  beforeEach(async function () {
+    job = await db.query(`SELECT id FROM jobs`);
+  });
+  test("works", async function () {
+    const res = await User.applyToJob("u1", job.rows[0].id);
+    expect(res).toEqual([{ job_id: job.rows[0].id }]);
+  });
+});
+
+describe("getApplications", function () {
+  test("works", async function () {
+    const result = await User.getApplications("u1");
+
+    expect(Array.isArray(result)).toBe(true);
   });
 });

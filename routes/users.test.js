@@ -2,9 +2,10 @@
 
 const request = require("supertest");
 
-const db = require("../db.js");
+const db = require("../db");
 const app = require("../app");
 const User = require("../models/user");
+const Jobs = require("../models/jobs");
 
 const {
   commonBeforeAll,
@@ -192,6 +193,7 @@ describe("GET /users/:username", function () {
       .get(`/users/u1`)
       .set("authorization", `Bearer ${adminToken}`);
     expect(resp.body).toEqual({
+      jobs: [],
       user: {
         username: "u1",
         firstName: "U1F",
@@ -329,5 +331,42 @@ describe("DELETE /users/:username", function () {
       .delete(`/users/nope`)
       .set("authorization", `Bearer ${adminToken}`);
     expect(resp.statusCode).toEqual(404);
+  });
+});
+
+/************************************** POST /users/:username/jobs/:id */
+describe("POST /users/:username/jobs/:id", function () {
+  let newJob;
+
+  beforeEach(async function () {
+    newJob = await db.query(`SELECT id FROM jobs`);
+  });
+
+  test("works for admin", async function () {
+    const resp = await request(app)
+      .post(`/users/u1/jobs/${newJob.rows[0].id}`)
+      .set("authorization", `Bearer ${adminToken}`);
+    expect(resp.statusCode).toEqual(200);
+    console.log(resp.statusCode);
+  });
+
+  test("works for regular user", async function () {
+    const resp = await request(app)
+      .post(`/users/u1/jobs/${newJob.rows[0].id}`)
+      .set("authorization", `Bearer ${userToken}`);
+    expect(resp.statusCode).toEqual(200);
+    console.log(resp.statusCode);
+  });
+
+  test("unauth for anon user", async function () {
+    const resp = await request(app).post("/users/u1/jobs/j1");
+    expect(resp.statusCode).toEqual(401);
+  });
+
+  test("error handling", async function () {
+    const resp = await request(app)
+      .post("/users/u1/jobs/invalidJobId")
+      .set("authorization", `Bearer ${adminToken}`);
+    expect(resp.statusCode).toEqual(500);
   });
 });

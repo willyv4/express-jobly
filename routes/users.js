@@ -6,7 +6,7 @@ const jsonschema = require("jsonschema");
 
 const express = require("express");
 const { ensureLoggedIn, ensureAdmin } = require("../middleware/auth");
-const { BadRequestError } = require("../expressError");
+const { BadRequestError, NotFoundError } = require("../expressError");
 const User = require("../models/user");
 const { createToken } = require("../helpers/tokens");
 const userNewSchema = require("../schemas/userNew.json");
@@ -42,6 +42,32 @@ router.post("/", ensureAdmin, async function (req, res, next) {
   }
 });
 
+/**
+ * Apply for a job.
+ *
+ * @param {string} username - The username of the user applying for the job.
+ * @param {string} id - The ID of the job to apply for.
+ * @returns {string} - The ID of the applied job.
+ * @throws {UnauthorizedError} - If the user is not logged in or is not an admin.
+ * @throws {NotFoundError} - If no user is found with the specified username or if the job is not found.
+ */
+
+router.post(
+  "/:username/jobs/:id",
+  ensureLoggedIn || ensureAdmin,
+  async function (req, res, next) {
+    try {
+      const { username, id } = req.params;
+
+      const appliedJob = await User.applyToJob(username, id);
+
+      return res.status(200).json({ applied: appliedJob });
+    } catch (err) {
+      return next(err);
+    }
+  }
+);
+
 /** GET / => { users: [ {username, firstName, lastName, email }, ... ] }
  *
  * Returns list of all users.
@@ -71,7 +97,8 @@ router.get(
   async function (req, res, next) {
     try {
       const user = await User.get(req.params.username);
-      return res.json({ user });
+      const applications = await User.getApplications(req.params.username);
+      return res.json({ user, jobs: applications });
     } catch (err) {
       return next(err);
     }

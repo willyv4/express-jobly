@@ -100,7 +100,36 @@ class Jobs {
       [companyHandle]
     );
 
-    const jobs = jobsRes.rows[0];
+    const jobs = jobsRes.rows;
+
+    if (jobs.length === 0) throw new NotFoundError(`No jobs: ${companyHandle}`);
+
+    return jobs;
+  }
+
+  /**
+   * Get jobs by company handle.
+   *
+   * @NEEDS_TESTS
+   * @NEEDS_TESTS
+   * @NEEDS_TESTS
+   *
+   * @param {string} companyHandle - The handle of the company.
+   * @returns {Object[]} - An array of job objects associated with the company.
+   * @throws {NotFoundError} - If no jobs are found for the specified company handle.
+   */
+
+  static async getByCompany(companyHandle) {
+    const jobsRes = await db.query(
+      `SELECT id, title,
+	        salary,
+			equity
+           FROM jobs
+           WHERE company_handle = $1`,
+      [companyHandle]
+    );
+
+    const jobs = jobsRes.rows;
 
     if (!jobs) throw new NotFoundError(`No jobs: ${companyHandle}`);
 
